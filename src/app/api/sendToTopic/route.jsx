@@ -1,0 +1,82 @@
+import { NextResponse } from 'next/server';
+import { google } from 'googleapis'
+import { decryptGCPServiceAccount } from '@/utils/decrypt/decrypt'
+import { initializeApp, cert, getApps, getApp } from 'firebase-admin/app'
+import { getMessaging } from "firebase-admin/messaging"
+
+// server actions
+import { postToFirestore } from '@/action/google/firestore';
+
+const serviceAccountJson = decryptGCPServiceAccount()
+
+export const POST = async (request) => {
+  const body = await request.json()
+
+  const defaultApp = getApps().length === 0 ? initializeApp({
+    credential: cert({
+      projectId: serviceAccountJson.project_id,
+      clientEmail: serviceAccountJson.client_email,
+      privateKey: serviceAccountJson.private_key
+    })
+  }) : getApp()
+
+  console.log("body: ", body)
+
+  const message = {
+    notification: {
+      title: body.title,
+      body: body.body,
+//      image: body.image,
+//      url: body.url,
+    },
+    data: {
+      notificationId: body.notificationId,
+      type: body.type
+    },
+    webpush: {
+      fcmOptions: {
+      //  link: payload.url,
+      },
+/*      headers: {
+        image: payload.image
+      } */
+    },
+    topic: body.topic
+  }
+  console.log("message: ", message)
+
+  try
+  {
+    const resp = await getMessaging().send(message)
+
+    // After successful send, post to Firestore
+    const notiPayload = {
+      notiTitle: body.title,
+      notiBody: body.body,
+      notiTopic: body.topic,
+      notiType: body.type,
+      notificationId: body.notificationId,
+    }
+
+    console.log("notiPayload: ", notiPayload)
+    const retFirestore = await postToFirestore("notifications", notiPayload)
+
+    return NextResponse.json(
+      {
+        message: "Message sent.",
+      },
+      {
+        status: 200
+      }
+    )
+  } catch (err) {
+    return NextResponse.json(
+      {
+        message: "Internal Server Error: " + err,
+      },
+      {
+        status: 500
+      }
+    )
+  }
+}
