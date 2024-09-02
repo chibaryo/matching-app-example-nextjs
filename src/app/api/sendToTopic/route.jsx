@@ -29,10 +29,10 @@ export const POST = async (request) => {
 //      image: body.image,
 //      url: body.url,
     },
-    data: {
+/*    data: {
       notificationId: body.notificationId,
       type: body.type
-    },
+    }, */
     webpush: {
       fcmOptions: {
       //  link: payload.url,
@@ -50,7 +50,7 @@ export const POST = async (request) => {
     const resp = await getMessaging().send(message)
 
     // After successful send, post to Firestore
-    const notiPayload = {
+/*    const notiPayload = {
       notiTitle: body.title,
       notiBody: body.body,
       notiTopic: body.topic,
@@ -60,7 +60,7 @@ export const POST = async (request) => {
 
     console.log("notiPayload: ", notiPayload)
     const retFirestore = await postToFirestore("notifications", notiPayload)
-
+*/
     return NextResponse.json(
       {
         message: "Message sent.",
