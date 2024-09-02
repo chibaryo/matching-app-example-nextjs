@@ -29,10 +29,10 @@ export const POST = async (request) => {
 //      image: body.image,
 //      url: body.url,
     },
-    data: {
+/*    data: {
       notificationId: body.notificationId,
       type: body.type
-    },
+    },*/
     webpush: {
       fcmOptions: {
       //  link: payload.url,
@@ -70,6 +70,8 @@ export const POST = async (request) => {
       }
     )
   } catch (err) {
+    console.log("sending message to topic error:", err)
+
     return NextResponse.json(
       {
         message: "Internal Server Error: " + err,
