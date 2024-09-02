@@ -29,10 +29,12 @@ export const POST = async (request) => {
 //      image: body.image,
 //      url: body.url,
     },
-/*    data: {
-      notificationId: body.notificationId,
-      type: body.type
-    },*/
+    data: {
+        notiTitle: body.title,
+        notiBody: body.body,
+      //notificationId: body.notificationId,
+      //type: body.type
+    },
     webpush: {
       fcmOptions: {
       //  link: payload.url,
