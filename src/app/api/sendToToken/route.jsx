@@ -41,25 +41,13 @@ export const POST = async (request) => {
         image: payload.image
       } */
     },
-    topic: body.token
+    token: body.token
   }
   console.log("message: ", message)
 
   try
   {
     const resp = await getMessaging().send(message)
-
-    // After successful send, post to Firestore
-    const notiPayload = {
-      notiTitle: body.title,
-      notiBody: body.body,
-      notiTopic: body.topic,
-      notiType: body.type,
-      notificationId: body.notificationId,
-    }
-
-    console.log("notiPayload: ", notiPayload)
-    const retFirestore = await postToFirestore("notifications", notiPayload)
 
     return NextResponse.json(
       {
